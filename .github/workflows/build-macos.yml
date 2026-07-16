@@ -1,0 +1,33 @@
+name: Build OpenOCD for macOS aarch64
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          brew install --quiet autoconf automake libtool pkg-config libusb hidapi
+
+      - name: Build and package
+        run: |
+          export PATH="/opt/homebrew/bin:$PATH"
+          ./build-macos.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openocd-macos-aarch64
+          path: openocd-macos-aarch64.tar.gz
+          if-no-files-found: error
