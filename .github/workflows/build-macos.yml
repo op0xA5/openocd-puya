@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    permissions:
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -31,3 +33,14 @@ jobs:
           name: openocd-macos-aarch64
           path: openocd-macos-aarch64.tar.gz
           if-no-files-found: error
+
+      - name: Create Release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v0.12.0-macos-aarch64-${{ github.run_number }}"
+          gh release create "${TAG}" \
+            --title "OpenOCD macOS aarch64 build ${{ github.run_number }}" \
+            --notes "Automated build for commit ${{ github.sha }}" \
+            openocd-macos-aarch64.tar.gz
