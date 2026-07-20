@@ -47,6 +47,8 @@ static const struct cmsis_dap_backend *const cmsis_dap_backends[] = {
 #if BUILD_CMSIS_DAP_HID == 1
 	&cmsis_dap_hid_backend,
 #endif
+
+	&cmsis_dap_net_tcp_backend,
 };
 
 /* USB Config */
@@ -2103,8 +2105,8 @@ static const struct command_registration cmsis_dap_command_handlers[] = {
 		.name = "cmsis_dap_backend",
 		.handler = &cmsis_dap_handle_backend_command,
 		.mode = COMMAND_CONFIG,
-		.help = "set the communication backend to use (USB bulk or HID).",
-		.usage = "(auto | usb_bulk | hid)",
+		.help = "set the communication backend to use (USB bulk, HID or TCP).",
+		.usage = "(auto | usb_bulk | hid | net_tcp)",
 	},
 #if BUILD_CMSIS_DAP_USB
 	{
@@ -2115,6 +2117,13 @@ static const struct command_registration cmsis_dap_command_handlers[] = {
 		.usage = "<cmd>",
 	},
 #endif
+	{
+		.name = "cmsis_dap_net",
+		.chain = cmsis_dap_net_subcommand_handlers,
+		.mode = COMMAND_ANY,
+		.help = "net_tcp backend-specific commands",
+		.usage = "<cmd>",
+	},
 	COMMAND_REGISTRATION_DONE
 };
 
